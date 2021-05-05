@@ -26,6 +26,7 @@ export const LiveCommentComponent = {
         content: 'Hello everyone until tommorow streaming is on..! enjoy it :)',
         createdAt: '2021-05-05 14:27:00',
       },
+      editMode: false,
     };
   },
   created() {
@@ -34,6 +35,9 @@ export const LiveCommentComponent = {
       .then((comments) => {
         this.comments = comments.data;
       });
+  },
+  methods: {
+    toggleLike() {},
   },
   template: `
     <div class="live-comment-component">
@@ -46,7 +50,10 @@ export const LiveCommentComponent = {
       <hr class="divider divider--primary" />
       <p class="warn">The use of comments may be restricted if you do not observe the manners of comments.</p>
       <LiveCommentListComponent :comments="comments"></LiveCommentListComponent>
-      <CommentInputComponent class="form"></CommentInputComponent>
+      <section class="actions">
+        <button @click="toggleLike">LIKES!</button>
+        <CommentInputComponent class="form" @focus="editMode = true" :edit-mode="editMode"></CommentInputComponent>
+      </section>
     </div>
   `,
 };

@@ -8,21 +8,74 @@
   <link rel="stylesheet" href="./styles/live-comment.css">
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <title>liveComment</title>
+  <style>
+    .live-comment-container {
+      position: fixed;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+      min-height: calc(100vh - 100vw);
+    }
+
+    .live-comment-container>.live-comment-component {
+      height: inherit;
+    }
+
+    .handle {
+      background: salmon;
+      padding: 10px;
+    }
+  </style>
 </head>
 
 <body>
   <div id="app">
-    <live-comment></live-comment>
+    <div class="live-comment-container" ref="liveComment" :style="liveCommentContainerStyle">
+      <p class="handle" @touchstart="handleTouchStart" @touchmove="handleTouchMove">handle</p>
+      <live-comment class="live-comment-component"></live-comment>
+    </div>
   </div>
   <script type="module">
     import LiveCommentComponent from "./components/live-comment/index.js";
-
     (() => {
       new Vue({
         el: '#app',
         components: {
           'live-comment': LiveCommentComponent,
         },
+        data: {
+          minLiveCommentElementHeight: 0,
+          liveCommentElementHeight: 0,
+          touchY: { start: 0, current: 0 },
+        },
+        computed: {
+          liveCommentContainerStyle() {
+            return {
+              'height': this.liveCommentElementHeight + 'px'
+            };
+          },
+        },
+        mounted() {
+          this.minLiveCommentElementHeight = window.innerHeight - window.innerWidth;
+          this.liveCommentElementHeight = this.$refs.liveComment.clientHeight;
+        },
+        methods: {
+          handleTouchStart(e) {
+            this.touchY.start = e.changedTouches[0].pageY;
+          },
+          handleTouchMove(e) {
+            const direction = this.touchY.start - e.changedTouches[0].pageY < 0 ? 'down' : 'up';
+
+            if (direction == 'up' && this.liveCommentElementHeight >= window.innerHeight * 0.8) {
+              return;
+            }
+
+            this.touchY.current = e.changedTouches[0].pageY;
+            this.liveCommentElementHeight = Math.max(this.minLiveCommentElementHeight, this.liveCommentElementHeight + this.touchY.start - this.touchY.current);
+            console.log(this.liveCommentElementHeight);
+            this.touchY.start = e.changedTouches[0].pageY;
+          }
+        }
       })
     })();
   </script>
