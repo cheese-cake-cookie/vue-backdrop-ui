@@ -46,7 +46,10 @@ export const LiveCommentComponent = {
       <hr class="divider divider--primary" />
       <p class="warn">The use of comments may be restricted if you do not observe the manners of comments.</p>
       <LiveCommentListComponent :comments="comments"></LiveCommentListComponent>
-      <CommentInputComponent class="form"></CommentInputComponent>
+      <section class="actions">
+        <button>LIKES!</button>
+        <CommentInputComponent class="form"></CommentInputComponent>
+      </section>
     </div>
   `,
 };

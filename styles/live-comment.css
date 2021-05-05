@@ -36,11 +36,15 @@
   background-color: var(--background-deep);
 }
 
-.live-comment-component > .form {
+.live-comment-component > .actions {
   position: fixed;
   bottom: 0px;
   left: 0px;
   right: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #fff;
 }
 
 .live-comment-component > .live-comment-list-component {
@@ -84,13 +88,9 @@
 }
 
 .comment-input-component {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
   padding: 15px;
   height: 70px;
   box-sizing: border-box;
-  background-color: #fff;
 }
 .comment-input-component .input__label {
   position: relative;
