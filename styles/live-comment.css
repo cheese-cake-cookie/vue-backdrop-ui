@@ -36,6 +36,17 @@
   background-color: var(--background-deep);
 }
 
+.live-comment-component > .form {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.live-comment-component > .live-comment-list-component {
+  margin-bottom: 70px;
+}
+
 /* shared */
 .live-comment-list-component {
   margin: 0px;
@@ -70,4 +81,33 @@
 .live-comment-list-item-component .created-at {
   font-size: 13px;
   color: var(--gray);
+}
+
+.comment-input-component {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 15px;
+  height: 70px;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+.comment-input-component .input__label {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.comment-input-component .input {
+  padding: 10px 10px 10px 30px;
+  resize: none;
+}
+.comment-input-component .user-profile {
+  position: absolute;
+  left: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: var(--background-normal);
+  background-size: cover;
 }

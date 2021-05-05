@@ -1,10 +1,12 @@
 import { LiveCommentListComponent } from './shared/live-comment-list/index.js';
 import { LiveCommentListItemComponent } from './shared/live-comment-list-item/index.js';
+import { CommentInputComponent } from './shared/comment-input/index.js';
 
 export const LiveCommentComponent = {
   components: {
     LiveCommentListComponent,
     LiveCommentListItemComponent,
+    CommentInputComponent,
   },
   data() {
     return {
@@ -42,8 +44,9 @@ export const LiveCommentComponent = {
       <hr class="divider" />
       <LiveCommentListItemComponent :comment="adminComment"></LiveCommentListItemComponent>
       <hr class="divider divider--primary" />
-      <p class="warn">도배/욕설 등 댓글 예절을 지키지 않을 경우, 댓글 이용이 제한될 수 있습니다.</p>
+      <p class="warn">The use of comments may be restricted if you do not observe the manners of comments.</p>
       <LiveCommentListComponent :comments="comments"></LiveCommentListComponent>
+      <CommentInputComponent class="form"></CommentInputComponent>
     </div>
   `,
 };
