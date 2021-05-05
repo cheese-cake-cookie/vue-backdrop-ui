@@ -1,0 +1,44 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "user": {
+        "id": 1,
+        "nickname": "MIA",
+        "image": "https://dummyimage.com/400x400/ff36de/ffffff&text=MIA"
+      },
+      "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!",
+      "createdAt": "2021-05-05 14:27:00"
+    },
+    {
+      "id": 2,
+      "user": {
+        "id": 1,
+        "nickname": "SIA",
+        "image": "https://dummyimage.com/400x400/ffcd40/ffffff&text=SIA"
+      },
+      "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!",
+      "createdAt": "2021-05-05 14:27:00"
+    },
+    {
+      "id": 3,
+      "user": {
+        "id": 2,
+        "nickname": "KIA",
+        "image": "https://dummyimage.com/400x400/1fa1eb/ffffff&text=KIA"
+      },
+      "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!",
+      "createdAt": "2021-05-05 14:27:00"
+    },
+    {
+      "id": 4,
+      "user": {
+        "id": 3,
+        "nickname": "TIA",
+        "image": "https://dummyimage.com/400x400/4caf50/ffffff&text=TIA"
+      },
+      "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, nisi!",
+      "createdAt": "2021-05-05 14:27:00"
+    }
+  ]
+}

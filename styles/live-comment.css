@@ -3,10 +3,32 @@
   --background-deep: #e6e7e8;
   --gray: #666;
   --dark-gray: #333;
+  --primary-color: #1fa1eb;
 }
 
+.live-comment-component .channel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.live-comment-component .channel-image {
+  width: 30px;
+  height: 30px;
+  background-color: var(--background-deep);
+  border: none;
+}
+.live-comment-component .channel-title {
+  margin: 0px;
+  margin-left: 10px;
+  font-weight: normal;
+  font-size: 15px;
+}
+.live-comment-component .divider {
+  border: none;
+  border-top: 1px solid var(--background-deep);
+}
 .live-comment-component .warn {
-  padding: 10px;
+  padding: 15px;
   border-radius: 8px;
   text-align: center;
   font-size: 15px;
@@ -23,7 +45,7 @@
 
 .live-comment-list-item-component {
   position: relative;
-  padding: 10px 20px 20px 30px;
+  padding: 15px 15px 15px 30px;
   list-style: none;
 }
 .live-comment-list-item-component .user {
@@ -36,8 +58,10 @@
   height: 20px;
   border-radius: 10px;
   background-color: var(--background-normal);
+  background-size: cover;
 }
 .live-comment-list-item-component .content {
+  margin: 10px 0px 0px;
   padding: 10px;
   border-radius: 8px;
   color: var(--dark-gray);
