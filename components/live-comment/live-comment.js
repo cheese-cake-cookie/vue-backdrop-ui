@@ -26,6 +26,7 @@ export const LiveCommentComponent = {
         content: 'Hello everyone until tommorow streaming is on..! enjoy it :)',
         createdAt: '2021-05-05 14:27:00',
       },
+      editMode: false,
     };
   },
   created() {
@@ -48,8 +49,9 @@ export const LiveCommentComponent = {
       <LiveCommentListComponent :comments="comments"></LiveCommentListComponent>
       <section class="actions">
         <button>LIKES!</button>
-        <CommentInputComponent class="form"></CommentInputComponent>
+        <CommentInputComponent class="form" @focus="editMode = true" :edit-mode="editMode"></CommentInputComponent>
       </section>
+      <div class="dim" :class="{showing: editMode}" @click="editMode = false"></div>
     </div>
   `,
 };
