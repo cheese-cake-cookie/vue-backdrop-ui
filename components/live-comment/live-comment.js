@@ -36,6 +36,9 @@ export const LiveCommentComponent = {
         this.comments = comments.data;
       });
   },
+  methods: {
+    toggleLike() {},
+  },
   template: `
     <div class="live-comment-component">
       <div class="channel">
@@ -48,10 +51,9 @@ export const LiveCommentComponent = {
       <p class="warn">The use of comments may be restricted if you do not observe the manners of comments.</p>
       <LiveCommentListComponent :comments="comments"></LiveCommentListComponent>
       <section class="actions">
-        <button>LIKES!</button>
+        <button @click="toggleLike">LIKES!</button>
         <CommentInputComponent class="form" @focus="editMode = true" :edit-mode="editMode"></CommentInputComponent>
       </section>
-      <div class="dim" :class="{showing: editMode}" @click="editMode = false"></div>
     </div>
   `,
 };
