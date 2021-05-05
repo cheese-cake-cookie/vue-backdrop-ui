@@ -1,34 +1,47 @@
 :root {
-  --background-color: #f1f1f2;
+  --background-normal: #f1f1f2;
+  --background-deep: #e6e7e8;
   --gray: #666;
   --dark-gray: #333;
 }
 
+.live-comment-component .warn {
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--dark-gray);
+  background-color: var(--background-deep);
+}
+
 /* shared */
+.live-comment-list-component {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+
 .live-comment-list-item-component {
   position: relative;
   padding: 10px 20px 20px 30px;
   list-style: none;
 }
-
 .live-comment-list-item-component .user {
   display: inline-block;
 }
-
-.live-comment-list-item-component .user__profile {
+.live-comment-list-item-component .user-profile {
   position: absolute;
   left: 5px;
   width: 20px;
   height: 20px;
   border-radius: 10px;
-  background-color: var(--background-color);
+  background-color: var(--background-normal);
 }
-
 .live-comment-list-item-component .content {
   padding: 10px;
   border-radius: 8px;
   color: var(--dark-gray);
-  background-color: var(--background-color);
+  background-color: var(--background-normal);
 }
 .live-comment-list-item-component .created-at {
   font-size: 13px;
