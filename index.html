@@ -9,20 +9,14 @@
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <title>liveComment</title>
   <style>
-    .live-comment-container {
-      position: fixed;
-      bottom: 0px;
-      left: 0px;
-      right: 0px;
-      min-height: calc(100vh - 100vw);
-    }
-
-    .live-comment-container>.live-comment-component {
-      height: inherit;
+    html,
+    body {
+      margin: 0px;
     }
 
     .handle {
       background: salmon;
+      margin: 0px;
       padding: 10px;
     }
   </style>
@@ -32,48 +26,93 @@
   <div id="app">
     <div class="live-comment-container" ref="liveComment" :style="liveCommentContainerStyle">
       <p class="handle" @touchstart="handleTouchStart" @touchmove="handleTouchMove">handle</p>
-      <live-comment class="live-comment-component"></live-comment>
+      <div class="live-comment-wrap">
+        <live-comment-list-item class="live-comment-component__live-comment-list" :comment="adminComment">
+        </live-comment-list-item>
+        <hr class="divider divider--primary" />
+        <div class="channel">
+          <img class="channel-image" :src="channel.image">
+          <h1 class="channel-title">{{ channel.title }}</h1>
+        </div>
+        <hr class="divider" />
+        <p class="warn">The use of comments may be restricted if you do not observe the manners of comments.</p>
+        <live-comment-list :comments="comments"></live-comment-list>
+      </div>
+      <section class="actions">
+        <button @click="toggleLike">LIKES!</button>
+        <comment-input class="live-comment-component__comment__input" @focus="editMode = true" :edit-mode="editMode">
+        </comment-input>
+      </section>
+      <div class="dim"></div>
     </div>
   </div>
   <script type="module">
-    import LiveCommentComponent from "./components/live-comment/index.js";
+    import { LiveCommentListComponent } from "./components/live-comment/live-comment-list/index.js";
+    import { LiveCommentListItemComponent } from "./components/live-comment/live-comment-list-item/index.js";
+    import { CommentInputComponent } from "./components/live-comment/comment-input/index.js";
     (() => {
       new Vue({
         el: '#app',
         components: {
-          'live-comment': LiveCommentComponent,
+          'live-comment-list': LiveCommentListComponent,
+          'live-comment-list-item': LiveCommentListItemComponent,
+          'comment-input': CommentInputComponent,
         },
         data: {
+          editMode: false,
+          comments: [],
+          channel: {
+            id: 1,
+            title: 'WIGGLE WIGGLE',
+            image: 'https://dummyimage.com/400x400/93b4fa/ffffff&text=sora+no+aosa',
+          },
+          adminComment: {
+            id: 1,
+            user: {
+              id: 1,
+              nickname: 'MIA',
+              image: 'https://dummyimage.com/400x400/ff36de/ffffff&text=MIA',
+            },
+            content: 'Hello everyone until tommorow streaming is on..! enjoy it :)',
+            createdAt: '2021-05-05 14:27:00',
+          },
           minLiveCommentElementHeight: 0,
           liveCommentElementHeight: 0,
           touchY: { start: 0, current: 0 },
         },
         computed: {
           liveCommentContainerStyle() {
-            return {
-              'height': this.liveCommentElementHeight + 'px'
-            };
+            // return {
+            //   'height': this.liveCommentElementHeight + 'px'
+            // };
           },
+        },
+        created() {
+          fetch('./json/comments.json')
+            .then((res) => res.json())
+            .then((comments) => {
+              this.comments = comments.data;
+            });
         },
         mounted() {
           this.minLiveCommentElementHeight = window.innerHeight - window.innerWidth;
           this.liveCommentElementHeight = this.$refs.liveComment.clientHeight;
         },
         methods: {
+          toggleLike() { },
           handleTouchStart(e) {
-            this.touchY.start = e.changedTouches[0].pageY;
+            // this.touchY.start = e.changedTouches[0].pageY;
           },
           handleTouchMove(e) {
-            const direction = this.touchY.start - e.changedTouches[0].pageY < 0 ? 'down' : 'up';
+            // const direction = this.touchY.start - e.changedTouches[0].pageY < 0 ? 'down' : 'up';
 
-            if (direction == 'up' && this.liveCommentElementHeight >= window.innerHeight * 0.8) {
-              return;
-            }
+            // if (direction == 'up' && this.liveCommentElementHeight >= window.innerHeight * 0.8) {
+            //   return;
+            // }
 
-            this.touchY.current = e.changedTouches[0].pageY;
-            this.liveCommentElementHeight = Math.max(this.minLiveCommentElementHeight, this.liveCommentElementHeight + this.touchY.start - this.touchY.current);
-            console.log(this.liveCommentElementHeight);
-            this.touchY.start = e.changedTouches[0].pageY;
+            // this.touchY.current = e.changedTouches[0].pageY;
+            // this.liveCommentElementHeight = Math.max(this.minLiveCommentElementHeight, this.liveCommentElementHeight + this.touchY.start - this.touchY.current);
+            // this.touchY.start = e.changedTouches[0].pageY;
           }
         }
       })
