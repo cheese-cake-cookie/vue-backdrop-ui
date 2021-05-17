@@ -13,19 +13,32 @@
     body {
       margin: 0px;
     }
+
+    .app {
+      width: 100%;
+      height: 100vh;
+      background: lavender;
+    }
   </style>
 </head>
 
 <body>
   <div id="app" class="app">
-    <div class="dim"></div>
     <div class="live-comment-container" ref="liveCommentContainer" :style="liveCommentContainerStyle">
       <div class="live-comment-dim" :style="liveCommentDimStyle"></div>
       <div class="live-comment-wrap">
         <div class="live-comment-content">
           <p class="handle-content" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
             @touchend="handleTouchEnd"></p>
-          <live-comment-list class="live-comment-list" :comments="comments"></live-comment-list>
+          <live-comment-list class="live-comment-list" :comments="comments" ref="liveCommentList">
+            <div class="loader" ref="loader">
+              <div v-show="! isFailedLoad && !isFirst && isLoading">
+                <p>loading...</p>
+              </div>
+              <p v-if="isFirst && !isEmpty">last comment</p>
+              <button v-if="isFailedLoad" type="button" name="button" @click="getCommentList">retry</button>
+            </div>
+          </live-comment-list>
         </div>
       </div>
       <section class="actions">
@@ -59,8 +72,14 @@
             prev: 0,
             time: 0,
           },
+          isFirst: false,
+          isLoading: false,
+          isFailedLoad: false,
         },
         computed: {
+          isEmpty() {
+            return this.comments.length === 0;
+          },
           liveCommentContainerStyle() {
             return {
               'transition-duration': this.transitionDuration + 'ms',
@@ -77,24 +96,23 @@
           }
         },
         created() {
-          fetch('./json/comments.json')
-            .then((res) => res.json())
+          this.getCommentList()
             .then((comments) => {
               this.comments = comments.data;
             });
         },
         mounted() {
-          this.initialLiveCommentContainerTop = window.innerHeight * 0.3;
-          this.liveCommentContainerTop = window.innerHeight * 0.3;
+          this.initialLiveCommentContainerTop = window.innerHeight * 0.2;
+          this.liveCommentContainerTop = window.innerHeight * 0.2;
         },
         methods: {
           toggleLike() { },
-          handleTouchStart: function (e) {
+          handleTouchStart(e) {
             this.touchY.time = e.timeStamp;
             this.touchY.start = e.changedTouches[0].pageY;
             this.touchY.prev = e.changedTouches[0].pageY;
           },
-          handleTouchMove: function (e) {
+          handleTouchMove(e) {
             const direction = this.touchY.start - e.changedTouches[0].pageY < 0 ? 'down' : 'up';
             const touchDistance = this.getTouchDistance(this.touchY.prev, e.changedTouches[0].pageY);
             this.touchY.prev = e.changedTouches[0].pageY;
@@ -108,7 +126,7 @@
             this.liveCommentContainerTop -= touchDistance;
             this.transitionDuration = 0;
           },
-          handleTouchEnd: function (e) {
+          handleTouchEnd(e) {
             const totalDistance = this.getTouchDistance(this.touchY.start, e.changedTouches[0].pageY);
             const direction = totalDistance > 0 ? 'up' : 'down';
             const touchTime = e.timeStamp - this.touchY.time;
@@ -126,9 +144,21 @@
             this.transitionDuration = 100;
 
           },
-          getTouchDistance: function (start, end) {
+          getTouchDistance(start, end) {
             return start - end;
-          }
+          },
+          getCommentList() {
+            if (this.isLoading) return;
+
+            this.isLoading = true;
+            this.isFailedLoad = false;
+
+            return fetch('./json/comments.json')
+              .then((res) => res.json())
+              .finally(() => {
+                this.isLoading = false;
+              });
+          },
         }
       })
     })();
