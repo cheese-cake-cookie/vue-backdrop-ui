@@ -95,28 +95,27 @@
 .actions {
   position: fixed;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-  padding: 10px 10px 10px 60px;
   bottom: 0px;
   left: 0px;
   right: 0px;
-  height: 60px;
+  height: 70px;
   background-color: var(--background-default);
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.3);
   z-index: 999;
 }
 .actions .button--like {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
   width: 36px;
   height: 36px;
-  padding: 0px;
-  font-size: 0px !important;
+  margin: 5px;
+  font-size: 10px !important;
   text-align: center;
   border-radius: 35px;
   background-color: var(--background-deep);
+  border: none;
+  background: tomato;
+  color: #fff;
 }
 
 /* shared */
@@ -159,27 +158,21 @@
 .comment-input-component {
   box-sizing: border-box;
 }
-.comment-input-component .user-profile {
-  position: absolute;
-  left: 5px;
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  background-color: var(--background-normal);
-  background-size: cover;
-}
 .comment-input-component .input__label {
   position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-.comment-input-component .input {
-  padding: 10px 10px 10px 30px;
+.comment-input-component .message {
+  padding: 10px;
+  border-color: var(--background-deep);
   resize: none;
 }
-.comment-input-component .button--submit:disabled {
+.comment-input-component .button--submit {
   margin-left: 10px;
+}
+.comment-input-component .button--submit:disabled {
   opacity: 0.6;
 }
 .comment-input-component .dim {
