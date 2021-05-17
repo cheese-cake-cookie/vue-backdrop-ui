@@ -13,37 +13,26 @@
     body {
       margin: 0px;
     }
-
-    .handle {
-      background: salmon;
-      margin: 0px;
-      padding: 10px;
-    }
   </style>
 </head>
 
 <body>
-  <div id="app">
-    <div class="live-comment-container" ref="liveComment" :style="liveCommentContainerStyle">
-      <p class="handle" @touchstart="handleTouchStart" @touchmove="handleTouchMove">handle</p>
+  <div id="app" class="app">
+    <div class="dim"></div>
+    <div class="live-comment-container" ref="liveCommentContainer" :style="liveCommentContainerStyle">
+      <div class="live-comment-dim" :style="liveCommentDimStyle"></div>
       <div class="live-comment-wrap">
-        <live-comment-list-item class="live-comment-component__live-comment-list" :comment="adminComment">
-        </live-comment-list-item>
-        <hr class="divider divider--primary" />
-        <div class="channel">
-          <img class="channel-image" :src="channel.image">
-          <h1 class="channel-title">{{ channel.title }}</h1>
+        <div class="live-comment-content">
+          <p class="handle-content" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
+            @touchend="handleTouchEnd"></p>
+          <live-comment-list class="live-comment-list" :comments="comments"></live-comment-list>
         </div>
-        <hr class="divider" />
-        <p class="warn">The use of comments may be restricted if you do not observe the manners of comments.</p>
-        <live-comment-list :comments="comments"></live-comment-list>
       </div>
       <section class="actions">
-        <button @click="toggleLike">LIKES!</button>
-        <comment-input class="live-comment-component__comment__input" @focus="editMode = true" :edit-mode="editMode">
+        <button class="button--like" @click="toggleLike">LIKES!</button>
+        <comment-input class="live-comment-component__comment__input">
         </comment-input>
       </section>
-      <div class="dim"></div>
     </div>
   </div>
   <script type="module">
@@ -61,31 +50,31 @@
         data: {
           editMode: false,
           comments: [],
-          channel: {
-            id: 1,
-            title: 'WIGGLE WIGGLE',
-            image: 'https://dummyimage.com/400x400/93b4fa/ffffff&text=sora+no+aosa',
+          liveCommentContainerTop: 0,
+          initialLiveCommentContainerTop: 0,
+          liveCommentContainerPosition: 'bottom',
+          transitionDuration: 0,
+          touchY: {
+            start: 0,
+            prev: 0,
+            time: 0,
           },
-          adminComment: {
-            id: 1,
-            user: {
-              id: 1,
-              nickname: 'MIA',
-              image: 'https://dummyimage.com/400x400/ff36de/ffffff&text=MIA',
-            },
-            content: 'Hello everyone until tommorow streaming is on..! enjoy it :)',
-            createdAt: '2021-05-05 14:27:00',
-          },
-          minLiveCommentElementHeight: 0,
-          liveCommentElementHeight: 0,
-          touchY: { start: 0, current: 0 },
         },
         computed: {
           liveCommentContainerStyle() {
-            // return {
-            //   'height': this.liveCommentElementHeight + 'px'
-            // };
+            return {
+              'transition-duration': this.transitionDuration + 'ms',
+              top: this.liveCommentContainerTop + 'px'
+            };
           },
+          liveCommentDimStyle() {
+            const maxOpacity = 0.5;
+            const ratio = this.initialLiveCommentContainerTop / (this.initialLiveCommentContainerTop - this.liveCommentContainerTop);
+
+            return {
+              opacity: Math.min(maxOpacity, maxOpacity / ratio)
+            }
+          }
         },
         created() {
           fetch('./json/comments.json')
@@ -95,24 +84,50 @@
             });
         },
         mounted() {
-          this.minLiveCommentElementHeight = window.innerHeight - window.innerWidth;
-          this.liveCommentElementHeight = this.$refs.liveComment.clientHeight;
+          this.initialLiveCommentContainerTop = window.innerHeight * 0.3;
+          this.liveCommentContainerTop = window.innerHeight * 0.3;
         },
         methods: {
           toggleLike() { },
-          handleTouchStart(e) {
-            // this.touchY.start = e.changedTouches[0].pageY;
+          handleTouchStart: function (e) {
+            this.touchY.time = e.timeStamp;
+            this.touchY.start = e.changedTouches[0].pageY;
+            this.touchY.prev = e.changedTouches[0].pageY;
           },
-          handleTouchMove(e) {
-            // const direction = this.touchY.start - e.changedTouches[0].pageY < 0 ? 'down' : 'up';
+          handleTouchMove: function (e) {
+            const direction = this.touchY.start - e.changedTouches[0].pageY < 0 ? 'down' : 'up';
+            const touchDistance = this.getTouchDistance(this.touchY.prev, e.changedTouches[0].pageY);
+            this.touchY.prev = e.changedTouches[0].pageY;
+            // if (direction == 'up' && this.$refs.liveCommentContainer.offsetTop <= 0) return;
 
-            // if (direction == 'up' && this.liveCommentElementHeight >= window.innerHeight * 0.8) {
-            //   return;
-            // }
+            // can't move under the initial position
+            if (direction == 'down' && this.liveCommentContainerTop - touchDistance >= this.initialLiveCommentContainerTop) {
+              return;
+            }
 
-            // this.touchY.current = e.changedTouches[0].pageY;
-            // this.liveCommentElementHeight = Math.max(this.minLiveCommentElementHeight, this.liveCommentElementHeight + this.touchY.start - this.touchY.current);
-            // this.touchY.start = e.changedTouches[0].pageY;
+            this.liveCommentContainerTop -= touchDistance;
+            this.transitionDuration = 0;
+          },
+          handleTouchEnd: function (e) {
+            const totalDistance = this.getTouchDistance(this.touchY.start, e.changedTouches[0].pageY);
+            const direction = totalDistance > 0 ? 'up' : 'down';
+            const touchTime = e.timeStamp - this.touchY.time;
+            const quickAction = touchTime < 200 && Math.abs(totalDistance) > 20;
+
+            if (quickAction || Math.abs(totalDistance) > 100) {
+              this.liveCommentContainerTop = direction == 'up' ? 0 : this.initialLiveCommentContainerTop;
+              this.liveCommentContainerPosition = direction == 'up' ? 'top' : 'bottom';
+              this.transitionDuration = 100;
+              return;
+            }
+
+            // 제자리
+            this.liveCommentContainerTop = this.liveCommentContainerPosition == 'top' ? 0 : this.initialLiveCommentContainerTop;
+            this.transitionDuration = 100;
+
+          },
+          getTouchDistance: function (start, end) {
+            return start - end;
           }
         }
       })
