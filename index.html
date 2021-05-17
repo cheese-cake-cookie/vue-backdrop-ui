@@ -9,71 +9,125 @@
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <title>liveComment</title>
   <style>
-    .live-comment-container {
-      position: fixed;
-      bottom: 0px;
-      left: 0px;
-      right: 0px;
-      min-height: calc(100vh - 100vw);
-    }
-
-    .live-comment-container>.live-comment-component {
-      height: inherit;
-    }
-
-    .handle {
-      background: salmon;
-      padding: 10px;
+    html,
+    body {
+      margin: 0px;
     }
   </style>
 </head>
 
 <body>
-  <div id="app">
-    <div class="live-comment-container" ref="liveComment" :style="liveCommentContainerStyle">
-      <p class="handle" @touchstart="handleTouchStart" @touchmove="handleTouchMove">handle</p>
-      <live-comment class="live-comment-component"></live-comment>
+  <div id="app" class="app">
+    <div class="dim"></div>
+    <div class="live-comment-container" ref="liveCommentContainer" :style="liveCommentContainerStyle">
+      <div class="live-comment-dim" :style="liveCommentDimStyle"></div>
+      <div class="live-comment-wrap">
+        <div class="live-comment-content">
+          <p class="handle-content" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
+            @touchend="handleTouchEnd"></p>
+          <live-comment-list class="live-comment-list" :comments="comments"></live-comment-list>
+        </div>
+      </div>
+      <section class="actions">
+        <button class="button--like" @click="toggleLike">LIKES!</button>
+        <comment-input class="live-comment-component__comment__input">
+        </comment-input>
+      </section>
     </div>
   </div>
   <script type="module">
-    import LiveCommentComponent from "./components/live-comment/index.js";
+    import { LiveCommentListComponent } from "./components/live-comment/live-comment-list/index.js";
+    import { LiveCommentListItemComponent } from "./components/live-comment/live-comment-list-item/index.js";
+    import { CommentInputComponent } from "./components/live-comment/comment-input/index.js";
     (() => {
       new Vue({
         el: '#app',
         components: {
-          'live-comment': LiveCommentComponent,
+          'live-comment-list': LiveCommentListComponent,
+          'live-comment-list-item': LiveCommentListItemComponent,
+          'comment-input': CommentInputComponent,
         },
         data: {
-          minLiveCommentElementHeight: 0,
-          liveCommentElementHeight: 0,
-          touchY: { start: 0, current: 0 },
+          editMode: false,
+          comments: [],
+          liveCommentContainerTop: 0,
+          initialLiveCommentContainerTop: 0,
+          liveCommentContainerPosition: 'bottom',
+          transitionDuration: 0,
+          touchY: {
+            start: 0,
+            prev: 0,
+            time: 0,
+          },
         },
         computed: {
           liveCommentContainerStyle() {
             return {
-              'height': this.liveCommentElementHeight + 'px'
+              'transition-duration': this.transitionDuration + 'ms',
+              top: this.liveCommentContainerTop + 'px'
             };
           },
+          liveCommentDimStyle() {
+            const maxOpacity = 0.5;
+            const ratio = this.initialLiveCommentContainerTop / (this.initialLiveCommentContainerTop - this.liveCommentContainerTop);
+
+            return {
+              opacity: Math.min(maxOpacity, maxOpacity / ratio)
+            }
+          }
+        },
+        created() {
+          fetch('./json/comments.json')
+            .then((res) => res.json())
+            .then((comments) => {
+              this.comments = comments.data;
+            });
         },
         mounted() {
-          this.minLiveCommentElementHeight = window.innerHeight - window.innerWidth;
-          this.liveCommentElementHeight = this.$refs.liveComment.clientHeight;
+          this.initialLiveCommentContainerTop = window.innerHeight * 0.3;
+          this.liveCommentContainerTop = window.innerHeight * 0.3;
         },
         methods: {
-          handleTouchStart(e) {
+          toggleLike() { },
+          handleTouchStart: function (e) {
+            this.touchY.time = e.timeStamp;
             this.touchY.start = e.changedTouches[0].pageY;
+            this.touchY.prev = e.changedTouches[0].pageY;
           },
-          handleTouchMove(e) {
+          handleTouchMove: function (e) {
             const direction = this.touchY.start - e.changedTouches[0].pageY < 0 ? 'down' : 'up';
+            const touchDistance = this.getTouchDistance(this.touchY.prev, e.changedTouches[0].pageY);
+            this.touchY.prev = e.changedTouches[0].pageY;
+            // if (direction == 'up' && this.$refs.liveCommentContainer.offsetTop <= 0) return;
 
-            if (direction == 'up' && this.liveCommentElementHeight >= window.innerHeight * 0.8) {
+            // can't move under the initial position
+            if (direction == 'down' && this.liveCommentContainerTop - touchDistance >= this.initialLiveCommentContainerTop) {
               return;
             }
 
-            this.touchY.current = e.changedTouches[0].pageY;
-            this.liveCommentElementHeight = Math.max(this.minLiveCommentElementHeight, this.liveCommentElementHeight + this.touchY.start - this.touchY.current);
-            console.log(this.liveCommentElementHeight);
-            this.touchY.start = e.changedTouches[0].pageY;
+            this.liveCommentContainerTop -= touchDistance;
+            this.transitionDuration = 0;
+          },
+          handleTouchEnd: function (e) {
+            const totalDistance = this.getTouchDistance(this.touchY.start, e.changedTouches[0].pageY);
+            const direction = totalDistance > 0 ? 'up' : 'down';
+            const touchTime = e.timeStamp - this.touchY.time;
+            const quickAction = touchTime < 200 && Math.abs(totalDistance) > 20;
+
+            if (quickAction || Math.abs(totalDistance) > 100) {
+              this.liveCommentContainerTop = direction == 'up' ? 0 : this.initialLiveCommentContainerTop;
+              this.liveCommentContainerPosition = direction == 'up' ? 'top' : 'bottom';
+              this.transitionDuration = 100;
+              return;
+            }
+
+            // 제자리
+            this.liveCommentContainerTop = this.liveCommentContainerPosition == 'top' ? 0 : this.initialLiveCommentContainerTop;
+            this.transitionDuration = 100;
+
+          },
+          getTouchDistance: function (start, end) {
+            return start - end;
           }
         }
       })
