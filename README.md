@@ -1,10 +1,9 @@
-# vue-live-comment
+# vue-backdrop-ui
 
-live comment component by vue.js
+backdrop-ui made by vue.js also supported quick action. 
+It can used in many way but I assumed use this UI at comment list.
 
-Mainly made backdrop-ui which supported quick action.
-
-It use vue.js but doesn't need webpack or other bundling tools.
+It mainly use vue.js, but doesn't need webpack or other bundling tools.
 
 ---
 
